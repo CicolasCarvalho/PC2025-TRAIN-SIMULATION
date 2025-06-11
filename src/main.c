@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "raylib.h"
+
 #include "render/render.h"
 #include "particle_system/particle_system.h"
+#include "utils/utils.h"
 #include "defs.h"
 
 #ifdef WIN32
@@ -28,31 +30,39 @@ double get_time() {
 
 #endif
 
+void handle_mouse_click(ParticleSystem *particle_system, Particle particle);
+
 int main (void) {
     PRINT("creating render engine...");
     RenderEngine *engine = RenderEngine_new(WINDOW_WIDTH, WINDOW_HEIGHT);
     RenderEngine_initialize(engine, "Particle Simulation");
     PRINT("render engine loaded!");
 
-    PRINT("createing particle system...");
+    PRINT("creating particle system...");
     ParticleSystem *particle_system = ParticleSystem_new(WINDOW_WIDTH, WINDOW_HEIGHT);
     PRINT("particle system created!");
 
     double elapsed_time = get_time(),
-           start_time = get_time();
+           start_time = get_time(),
+           dt = 0,
+           fps = 0;
 
     while (!RenderEngine_close_event(engine)) {
         elapsed_time = get_time();
 
-        if (elapsed_time - start_time > DELTA_TIME) {
-            PRINT("tick! (dt: %lf, fps: %lf)", elapsed_time - start_time, 1.0/(elapsed_time - start_time));
+        if (elapsed_time - start_time > (1.0/TARGET_FPS)) {
+            dt = elapsed_time - start_time;
+            fps = 1.0/dt;
+            PRINT("(dt: %lf, fps: %lf)", dt, fps);
             start_time = get_time();
             
-            ParticleSystem_set_particle(particle_system, rand() % WINDOW_WIDTH, rand() % WINDOW_HEIGHT, SAND);
-            
-            ParticleSystem_update(particle_system);
-            ParticleSystem_render(particle_system, engine);
-            RenderEngine_render(engine);
+            for(uint32_t i = 0; i < TICK_PER_SECOND; i++) {
+                handle_mouse_click(particle_system, SAND_PARTICLE);
+
+                ParticleSystem_update(particle_system);
+                ParticleSystem_render(particle_system, engine);
+                RenderEngine_render(engine);
+            }
         }
     }
 
@@ -60,4 +70,15 @@ int main (void) {
     RenderEngine_destroy(engine);
     PRINT("render engine destroyed!");
     return 0;
+}
+
+void handle_mouse_click(ParticleSystem *particle_system, Particle particle) {
+    if (IsMouseButtonDown(0)) {
+        int32_t x = GetMouseX(), y = GetMouseY();
+
+        for (int32_t i = -BRUSH_RADIUS / 2; i < BRUSH_RADIUS / 2; i++)
+            for (int32_t j = -BRUSH_RADIUS / 2; j < BRUSH_RADIUS / 2; j++)
+                if (x + i < WINDOW_WIDTH && x + i >= 0 && y + j < WINDOW_HEIGHT && y + j >= 0)
+                ParticleSystem_set_particle(particle_system, x + i, y + j, particle);
+    }
 }

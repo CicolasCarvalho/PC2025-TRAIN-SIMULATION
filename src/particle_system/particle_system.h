@@ -9,8 +9,9 @@
 #include "../render/render.h"
 
 typedef enum {
-    AIR,
-    SAND
+    AIR_PARTICLE,
+    SAND_PARTICLE,
+    WATER_PARTICLE
 } Particle;
 
 typedef struct {
