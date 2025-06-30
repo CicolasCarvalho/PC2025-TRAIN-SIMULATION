@@ -1,11 +1,16 @@
 {
     "files.associations": {
         "*.dbclient-js": "javascript",
+        "*.ejs": "html",
         "render.h": "c",
         "stdint.h": "c",
         "stdio.h": "c",
         "defs.h": "c",
         "particle_system.h": "c",
-        "compare": "c"
+        "compare": "c",
+        "city.h": "c",
+        "typeinfo": "c",
+        "world.h": "c",
+        "train_controller.h": "c"
     }
 }

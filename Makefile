@@ -14,10 +14,10 @@ SRC := $(shell find $(SRC_DIR) -name '*.c')
 OBJ := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC))
 
 # Compiler flags
-CFLAGS := -Wall -Wextra # -lubsan -fsanitize=undefined -fsanitize=address -Wno-unused-parameter
+CFLAGS := -Wall -Wextra  -lubsan -fsanitize=undefined -fsanitize=address -Wno-unused-parameter
 
 # Linker flags
-LDFLAGS := -lraylib
+LDFLAGS := -lraylib -lm -lpthread
 
 # Build target
 TARGET := $(BUILD_DIR)/out

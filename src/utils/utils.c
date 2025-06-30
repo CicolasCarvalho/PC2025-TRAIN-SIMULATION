@@ -1,13 +1,24 @@
 #include "utils.h"
 
-inline int32_t max_int(int x, int y) {
-    return x > y ? x : y;
+#ifdef WIN32
+
+#include <windows.h>
+double get_time() {
+    LARGE_INTEGER t, f;
+    QueryPerformanceCounter(&t);
+    QueryPerformanceFrequency(&f);
+    return (double)t.QuadPart/(double)f.QuadPart;
 }
 
-inline int32_t min_int(int x, int y) {
-    return x < y ? x : y;
+#else
+
+#include <sys/time.h>
+#include <sys/resource.h>
+
+double get_time() {
+    struct timeval t;
+    gettimeofday(&t, NULL);
+    return t.tv_sec + t.tv_usec*1e-6;
 }
 
-inline int32_t clamp_int(int val, int lo, int hi) {
-    return max_int(lo, min_int(hi, val));
-}
+#endif

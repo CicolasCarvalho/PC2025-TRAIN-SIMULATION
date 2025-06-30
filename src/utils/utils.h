@@ -1,10 +1,8 @@
 #ifndef PC2025_PARTICLE_SIMULATION_UTILS_H
 #define PC2025_PARTICLE_SIMULATION_UTILS_H
 
-#include "stdint.h"
+#include "stdlib.h"
 
-inline int32_t max_int(int x, int y);
-inline int32_t min_int(int x, int y);
-inline int32_t clamp_int(int val, int lo, int hi);
+double get_time(void);
 
 #endif //PC2025_PARTICLE_SIMULATION_UTILS_H

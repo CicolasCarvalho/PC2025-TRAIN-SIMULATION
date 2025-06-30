@@ -1,5 +1,5 @@
-#ifndef PC2025_PARTICLE_SIMULATION_DEFS_H
-#define PC2025_PARTICLE_SIMULATION_DEFS_H
+#ifndef PC2025_TRAIN_SIMULATION_DEFS_H
+#define PC2025_TRAIN_SIMULATION_DEFS_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -65,12 +65,19 @@
 
 //-program-config-------------------------------------------------------------------------------------------------------
 
-#define GET_POSITION(x, y, w) ((y) * (w) + (x)) 
+#define GET_POSITION(x, y, w) ((y) * (w) + (x))
 
-#define WINDOW_WIDTH 400
-#define WINDOW_HEIGHT 300
-#define TARGET_FPS 60
-#define TICK_PER_SECOND 2
-#define BRUSH_RADIUS 10
+#define WINDOW_WIDTH 800
+#define WINDOW_HEIGHT 600
+#define TARGET_FPS 120
+#define TICK_PER_SECOND 1
 
-#endif //PC2025_PARTICLE_SIMULATION_DEFS_H
+#define CITY_COUNT 100
+#define TRAIN_COUNT 2500
+#define LINE_TYPE 0 // 0 - straight, 1 - bezier, 2 - quad spline, 3 - cubic spline
+#define SPLINE_WEIGHT 4
+
+#define MULTITHREADING 1
+#define THREAD_COUNT 4
+
+#endif //PC2025_TRAIN_SIMULATION_DEFS_H
