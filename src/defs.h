@@ -75,7 +75,7 @@
 #define FPS_INTERVAL 1
 
 #define CITY_COUNT 100
-#define TRAIN_COUNT 10
+#define TRAIN_COUNT 10000
 #define LINE_TYPE 0 // 0 - straight, 1 - bezier, 2 - quad spline, 3 - cubic spline
 #define SPLINE_WEIGHT 4
 

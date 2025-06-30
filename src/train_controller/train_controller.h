@@ -40,7 +40,7 @@ void TrainController_free(TrainController *train_controller);
 
 void TrainController_update(TrainController *train_controller, double dt);
 void *TrainController_thread_ctx(void *arg);
-void TrainController_draw(TrainController *train_controller);
+void TrainController_draw(TrainController *train_controller, bool is_highlight);
 
 void TrainController_set_train_city(TrainController *train_controller, int32_t train_idx, int32_t city_idx);
 void TrainController_move_to(Train *train, int32_t target_city_idx);

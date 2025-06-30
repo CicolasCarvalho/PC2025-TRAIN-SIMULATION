@@ -45,6 +45,7 @@ int main (void) {
 
     bool target_cities = false;
     bool railway = true;
+    int32_t highlight = 0;
 
 #if MULTITHREADING
     pthread_t threads[THREAD_COUNT];
@@ -99,28 +100,29 @@ int main (void) {
 #if MULTITHREADING
         if (IsKeyPressed(KEY_ZERO)) {
             for (int32_t i = 0; i < THREAD_COUNT; i++) {
-                thread_ctx[i]->is_displaying = true;
+                highlight = 0;
             }
         }
         for (int32_t i = 1; i <= (THREAD_COUNT > 10 ? 10: THREAD_COUNT); i++) {
             int32_t key_num = 48 + i;
 
             if (IsKeyPressed(key_num)) {
-                for (int32_t j = 0; j < THREAD_COUNT; j++) {
-                    thread_ctx[j]->is_displaying = false;
-                }
-
-                thread_ctx[i-1]->is_displaying = true;
+                highlight = i;
             }
         }
 #endif
 
 #if MULTITHREADING
         for (int32_t i = 0; i < THREAD_COUNT; i++) {
-            TrainController_draw(thread_ctx[i]);
+            if (i == highlight - 1) continue;
+            TrainController_draw(thread_ctx[i], highlight == 0);
             if (target_cities)
                 draw_target_cities(world, thread_ctx[i]);
         }
+
+        if (highlight > 0) {
+            TrainController_draw(thread_ctx[highlight - 1], true);
+        }        
 #else
         TrainController_update(train_controller, dt);
         TrainController_draw(train_controller);

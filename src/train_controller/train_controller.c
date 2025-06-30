@@ -20,7 +20,7 @@ TrainController *TrainController_new(int32_t train_count, World *world)
         reset_train(train);
 
         train->speed = 100;
-        train->color = (Color){.r = rand() % 256, .g = rand() % 256, .b = rand() % 256, .a = 255};
+        train->color = (Color){.r = (rand() % 128) + 128, .g = (rand() % 128) + 128, .b = (rand() % 128) + 128, .a = 255};
     }
 
     return tc;
@@ -60,20 +60,20 @@ void *TrainController_thread_ctx(void *arg) {
     return NULL;
 }
 
-void TrainController_draw(TrainController *train_controller)
+void TrainController_draw(TrainController *train_controller, bool is_highlight)
 {
     for (int32_t i = 0; i < train_controller->train_count; i++)
     {
         Train *train = &train_controller->trains[i];
 
-        if (train_controller->is_displaying) {
+        if (is_highlight) {
             DrawRectangle(train->x - 4, train->y - 4, 8, 8, train->color);
         } else {
             DrawRectangle(train->x - 4, train->y - 4, 8, 8, (Color){
-                .r = 255,
-                .g = 0,
-                .b = 0,
-                .a = 100
+                .r = 50,
+                .g = 50,
+                .b = 50,
+                .a = 255
             });
         }
     }
