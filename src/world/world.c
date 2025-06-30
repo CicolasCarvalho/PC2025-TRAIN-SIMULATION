@@ -86,7 +86,7 @@ void World_add_city(World *world, City city)
     world->cities[world->city_count++] = city;
 }
 
-void World_draw(World *world)
+void World_draw(World *world, bool railways)
 {
     for (int i = 0; i < world->city_count; i++)
     {
@@ -94,7 +94,8 @@ void World_draw(World *world)
         City_draw(city);
     }
 
-    draw_railways(world);
+    if (railways)
+        draw_railways(world);
 }
 
 void World_create_railways(World *world, Railway railway, int32_t from_idx, int32_t to_idx)

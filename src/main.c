@@ -38,6 +38,14 @@ int main (void) {
 
     float dt = GetFrameTime();
 
+    double last_fps_update = get_time();
+    int32_t *fps_buffer = calloc(FPS_BUFFER, sizeof(int32_t));
+    float avg_fps = 0;
+    int32_t frame_count = 0;
+
+    bool target_cities = false;
+    bool railway = true;
+
 #if MULTITHREADING
     pthread_t threads[THREAD_COUNT];
     TrainController *thread_ctx[THREAD_COUNT];
@@ -67,17 +75,60 @@ int main (void) {
         RenderEngine_start(engine);
         
         dt = GetFrameTime();
+
+        if (get_time() - last_fps_update > FPS_INTERVAL) {
+            last_fps_update = get_time();
+            frame_count = (frame_count + 1) % FPS_BUFFER;
+            fps_buffer[frame_count] = GetFPS();
+            avg_fps = 0;
+            for (int32_t i = 0; i < FPS_BUFFER; i++) {
+                avg_fps += fps_buffer[i];
+            }
+            avg_fps /= FPS_BUFFER;
+
+            PRINT("FPS: %f", avg_fps);
+        }
+
+        if (IsKeyPressed(KEY_J)) {
+            target_cities = !target_cities;
+        }
+        if (IsKeyPressed(KEY_H)) {
+            railway = !railway;
+        }
+
+#if MULTITHREADING
+        if (IsKeyPressed(KEY_ZERO)) {
+            for (int32_t i = 0; i < THREAD_COUNT; i++) {
+                thread_ctx[i]->is_displaying = true;
+            }
+        }
+        for (int32_t i = 1; i <= (THREAD_COUNT > 10 ? 10: THREAD_COUNT); i++) {
+            int32_t key_num = 48 + i;
+
+            if (IsKeyPressed(key_num)) {
+                for (int32_t j = 0; j < THREAD_COUNT; j++) {
+                    thread_ctx[j]->is_displaying = false;
+                }
+
+                thread_ctx[i-1]->is_displaying = true;
+            }
+        }
+#endif
+
 #if MULTITHREADING
         for (int32_t i = 0; i < THREAD_COUNT; i++) {
             TrainController_draw(thread_ctx[i]);
-            draw_target_cities(world, thread_ctx[i]);
+            if (target_cities)
+                draw_target_cities(world, thread_ctx[i]);
         }
 #else
         TrainController_update(train_controller, dt);
         TrainController_draw(train_controller);
-        draw_target_cities(world, train_controller);
+        if (target_cities)
+            draw_target_cities(world, train_controller);
 #endif
-        World_draw(world);
+        World_draw(world, railway);
+        DrawText("1-n to filter thread / h to hide edges / j to show target", 10, WINDOW_HEIGHT - 30, 20, WHITE);
 
         RenderEngine_end(engine);
     }
@@ -88,6 +139,7 @@ int main (void) {
     }
 #endif
 
+    free(fps_buffer);
     PRINT("destroying render engine...");
     RenderEngine_destroy(engine);
     PRINT("render engine destroyed!");

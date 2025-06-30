@@ -32,6 +32,7 @@ typedef struct {
     World *world;
     Train *trains;
     int32_t train_count;
+    bool is_displaying;
 } TrainController;
 
 TrainController *TrainController_new(int32_t train_count, World *world);

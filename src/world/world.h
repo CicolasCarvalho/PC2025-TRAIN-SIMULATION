@@ -22,6 +22,6 @@ void World_free(World *world);
 
 void World_add_city(World *world, City city);
 void World_create_railways(World *world, Railway railway, int32_t from_idx, int32_t to_idx);
-void World_draw(World *world);
+void World_draw(World *world, bool railways);
 
 #endif //PC2025_TRAIN_SIMULATION_WORLD_H

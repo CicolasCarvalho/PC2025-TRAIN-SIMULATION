@@ -71,13 +71,15 @@
 #define WINDOW_HEIGHT 600
 #define TARGET_FPS 120
 #define TICK_PER_SECOND 1
+#define FPS_BUFFER 10
+#define FPS_INTERVAL 1
 
 #define CITY_COUNT 100
-#define TRAIN_COUNT 2500
+#define TRAIN_COUNT 10
 #define LINE_TYPE 0 // 0 - straight, 1 - bezier, 2 - quad spline, 3 - cubic spline
 #define SPLINE_WEIGHT 4
 
 #define MULTITHREADING 1
-#define THREAD_COUNT 4
+#define THREAD_COUNT 2
 
 #endif //PC2025_TRAIN_SIMULATION_DEFS_H

@@ -11,6 +11,7 @@ TrainController *TrainController_new(int32_t train_count, World *world)
     tc->train_count = train_count;
     tc->trains = (Train *)malloc(sizeof(Train) * train_count);
     tc->world = world;
+    tc->is_displaying = true;
 
     for (int32_t i = 0; i < train_count; i++)
     {
@@ -64,7 +65,17 @@ void TrainController_draw(TrainController *train_controller)
     for (int32_t i = 0; i < train_controller->train_count; i++)
     {
         Train *train = &train_controller->trains[i];
-        DrawRectangle(train->x - 4, train->y - 4, 8, 8, train->color);
+
+        if (train_controller->is_displaying) {
+            DrawRectangle(train->x - 4, train->y - 4, 8, 8, train->color);
+        } else {
+            DrawRectangle(train->x - 4, train->y - 4, 8, 8, (Color){
+                .r = 255,
+                .g = 0,
+                .b = 0,
+                .a = 100
+            });
+        }
     }
 }
 
