@@ -11,6 +11,6 @@
         "city.h": "c",
         "typeinfo": "c",
         "world.h": "c",
-        "train_controller.h": "c"
+        "entity_controller.h": "c"
     }
 }

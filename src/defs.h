@@ -1,5 +1,5 @@
-#ifndef PC2025_TRAIN_SIMULATION_DEFS_H
-#define PC2025_TRAIN_SIMULATION_DEFS_H
+#ifndef PC2025_ENTITY_SIMULATION_DEFS_H
+#define PC2025_ENTITY_SIMULATION_DEFS_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -74,12 +74,10 @@
 #define FPS_BUFFER 10
 #define FPS_INTERVAL 1
 
-#define CITY_COUNT 100
-#define TRAIN_COUNT 10000
-#define LINE_TYPE 0 // 0 - straight, 1 - bezier, 2 - quad spline, 3 - cubic spline
-#define SPLINE_WEIGHT 4
+#define CITY_COUNT 10
+#define ENTITY_COUNT 100
 
 #define MULTITHREADING 1
-#define THREAD_COUNT 2
+#define THREAD_COUNT 1
 
-#endif //PC2025_TRAIN_SIMULATION_DEFS_H
+#endif //PC2025_ENTITY_SIMULATION_DEFS_H

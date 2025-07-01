@@ -1,5 +1,5 @@
-#ifndef PC2025_TRAIN_SIMULATION_H
-#define PC2025_TRAIN_SIMULATION_H
+#ifndef PC2025_ENTITY_SIMULATION_H
+#define PC2025_ENTITY_SIMULATION_H
 
 #include <string.h>
 #include <stdint.h>
@@ -21,4 +21,4 @@ void RenderEngine_start(RenderEngine *engine);
 void RenderEngine_end(RenderEngine *engine);
 bool RenderEngine_close_event(RenderEngine *renderEngine);
 
-#endif //PC2025_TRAIN_SIMULATION_H
+#endif //PC2025_ENTITY_SIMULATION_H
