@@ -11,11 +11,34 @@
 #include "utils/utils.h"
 #include "defs.h"
 
+#if MPI_MODE
+    #include "mpi/mpi.h"
+#endif
+
 void generate_cities(World *world, int32_t count);
 void generate_edges(World *world);
 void draw_target_cities(World *world, EntityController *entity_controller);
 
-int main (void) {
+int main (int argc, char *argv[]) {
+#if MPI_MODE
+    MPI_Init(&argc, &argv);
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    int32_t thread_count = MULTITHREADING ? THREAD_COUNT : 1;
+
+    if (size < THREAD_COUNT + 1) {
+        RAISE("Deve haver pelo menos 2 processos MPI para executar este programa.");
+    }
+
+    if (rank > 0) {
+        EntityController_run_slave_process(rank, size);
+        MPI_Finalize();
+        return 0;   
+    }
+#endif
+
     int seed = (int)get_time();
     PRINT("seed: %i", seed);
     srand(seed);

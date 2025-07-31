@@ -8,6 +8,10 @@
 #include "../render/render.h"
 #include "../utils/utils.h"
 
+#if MPI_MODE
+    #include "mpi.h"
+#endif
+
 typedef struct Entity Entity;
 
 struct Entity {
@@ -45,5 +49,7 @@ void EntityController_draw(EntityController *entity_controller, bool is_highligh
 
 void EntityController_set_entity_city(EntityController *entity_controller, int32_t entity_idx, int32_t city_idx);
 void EntityController_move_to(Entity *entity, int32_t target_city_idx);
+
+void EntityController_run_slave_process(int32_t rank, int32_t size);
 
 #endif //PC2025_ENTITY_SIMULATION_TRAIN_CONTROLLER_H

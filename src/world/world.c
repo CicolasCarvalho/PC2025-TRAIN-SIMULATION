@@ -11,7 +11,7 @@ void draw_edges(World *world)
             City *city2 = &world->cities[j];
 
             DrawLineEx((Vector2){.x = city1->x, .y = city1->y},
-                        (Vector2){.x = city2->x, .y = city2->y}, 1,
+                        (Vector2){.x = city2->x, .y = city2->y}, 2,
                         world->edge[i][j].color);
         }
     }

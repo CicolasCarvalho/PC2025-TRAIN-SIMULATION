@@ -4,6 +4,27 @@ static void reset_entity(Entity *entity);
 static void trace_route_to(World *world, Entity *entity, int32_t destination);
 static void Entity_update(Entity *entity, World *world, float dt);
 
+typedef struct {
+    int32_t origin_x;
+    int32_t origin_y;
+    int32_t target_x;
+    int32_t target_y;
+
+    float x;
+    float y;
+    float speed;
+    int32_t city_idx;
+    int32_t target_idx;
+    
+    bool is_moving;
+    float progress;    
+
+    int32_t path[CITY_COUNT];
+    int32_t path_len;
+
+    float dt;
+} MPISendContext;
+
 EntityController *EntityController_new(int32_t entities_count, World *world)
 {
     EntityController *tc = (EntityController *)malloc(sizeof(EntityController));
@@ -20,7 +41,7 @@ EntityController *EntityController_new(int32_t entities_count, World *world)
         reset_entity(entity);
 
         entity->speed = 100;
-        entity->color = (Color){.r = (rand() % 128) + 128, .g = (rand() % 128) + 128, .b = (rand() % 128) + 128, .a = 255};
+        entity->color = (Color){.r = (rand() % 255), .g = (rand() % 255), .b = (rand() %255), .a = 255};
     }
 
     return tc;
@@ -97,6 +118,53 @@ void EntityController_move_to(Entity *entity, int32_t target_city_idx)
     entity->target_idx = target_city_idx;
     entity->is_moving = true;
     entity->progress = .0;
+}
+
+void EntityController_run_slave_process(int32_t rank, int32_t size) {
+#if MPI_MODE
+    MPISendContext *entity = malloc(sizeof(MPISendContext));
+
+    while (1) {
+        MPI_Recv(entity, sizeof(MPISendContext), MPI_BYTE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+        int32_t origin_x = entity->origin_x;
+        int32_t origin_y = entity->origin_y;
+        int32_t target_x = entity->target_x;
+        int32_t target_y = entity->target_y;
+
+        double distance = sqrt(pow(origin_x - target_x, 2) + pow(origin_y - target_y, 2));
+
+        entity->progress += (entity->speed / distance) * entity->dt;
+
+        if (entity->progress >= 1)
+        {
+            entity->progress = 1;
+            entity->is_moving = false;
+            entity->city_idx = entity->target_idx;
+            entity->target_idx = -1;
+
+            if (entity->path_len > 0)
+            {
+                for (int32_t j = 0; j < entity->path_len - 1; j++)
+                {
+                    entity->path[j] = entity->path[j + 1];
+                }
+                entity->path_len--;
+            }
+
+            if (entity->path_len > 0)
+            {
+                EntityController_move_to(entity, entity->path[0]);
+            }
+        }
+        
+        entity->x = (origin_x * (1 - entity->progress)) + (target_x * entity->progress);
+        entity->y = (origin_y * (1 - entity->progress)) + (target_y * entity->progress);
+        
+        MPI_Send(entity, sizeof(MPISendContext), MPI_BYTE, 0, 0, MPI_COMM_WORLD);
+    }
+    
+#endif
 }
 
 static void reset_entity(Entity *entity)
@@ -176,6 +244,46 @@ static void Entity_update(Entity *entity, World *world, float dt)
                 origin_y = world->cities[entity->city_idx].y,
                 target_x = world->cities[entity->target_idx].x,
                 target_y = world->cities[entity->target_idx].y;
+#if MPI_MODE
+        MPISendContext ctx = (MPISendContext){
+            .origin_x = origin_x,
+            .origin_y = origin_y,
+            .target_x = target_x,
+            .target_y = target_y,
+            .x = entity->x,
+            .y = entity->y,
+            .speed = entity->speed,
+            .city_idx = entity->city_idx,
+            .target_idx = entity->target_idx,
+            .is_moving = entity->is_moving,
+            .progress = entity->progress,
+            .path = {0},
+            .path_len = entity->path_len,
+            .dt = dt
+        };
+
+        for (int32_t i = 0; i < entity->path_len; i++)
+        {
+            ctx.path[i] = entity->path[i];
+        }
+
+        MPI_Send(&ctx, sizeof(MPISendContext), MPI_BYTE, 1, 0, MPI_COMM_WORLD);
+
+        MPI_Recv(&ctx, sizeof(MPISendContext), MPI_BYTE, 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        entity->x = ctx.x;
+        entity->y = ctx.y;
+        entity->city_idx = ctx.city_idx;
+        entity->target_idx = ctx.target_idx;
+        entity->is_moving = ctx.is_moving;
+        entity->progress = ctx.progress;
+        entity->path_len = ctx.path_len;
+        for (int32_t i = 0; i < entity->path_len; i++)
+        {
+            entity->path[i] = ctx.path[i];
+        }
+
+        return;
+#endif
         double distance = sqrt(pow(origin_x - target_x, 2) + pow(origin_y - target_y, 2));
 
         entity->progress += (entity->speed / distance) * dt;

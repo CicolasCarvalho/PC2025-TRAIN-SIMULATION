@@ -1,6 +1,3 @@
-# Compiler
-CC := gcc
-
 # Directories
 SRC_DIR := src
 BUILD_DIR := build
@@ -13,8 +10,11 @@ SRC := $(shell find $(SRC_DIR) -name '*.c')
 # This will correctly map e.g. src/subdir/foo.c to build/subdir/foo.o
 OBJ := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC))
 
+# Compiler
+CC := gcc
+
 # Compiler flags
-CFLAGS := -Wall -Wextra  -lubsan -fsanitize=undefined -fsanitize=address -Wno-unused-parameter
+CFLAGS := -Wall -Wextra  -lubsan # -fsanitize=undefined -fsanitize=address -Wno-unused-parameter
 
 # Linker flags
 LDFLAGS := -lraylib -lm -lpthread
@@ -24,6 +24,9 @@ TARGET := $(BUILD_DIR)/out
 
 # Default target
 all: $(TARGET) 
+
+mpi: CC := mpicc
+mpi: all
 
 # Compile source files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
@@ -38,4 +41,4 @@ $(TARGET): $(OBJ)
 clean:
 	rm -rf $(BUILD_DIR) # Remove the entire build directory
 
-.PHONY: all clean
+.PHONY: all clean mpi
