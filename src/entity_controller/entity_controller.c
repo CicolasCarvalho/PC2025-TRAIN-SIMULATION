@@ -154,7 +154,9 @@ void EntityController_run_slave_process(int32_t rank, int32_t size) {
 
             if (entity->path_len > 0)
             {
-                EntityController_move_to(entity, entity->path[0]);
+                entity->target_idx = entity->path[0];
+                entity->is_moving = true;
+                entity->progress = .0;
             }
         }
         
