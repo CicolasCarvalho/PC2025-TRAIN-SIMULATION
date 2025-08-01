@@ -21,6 +21,7 @@ Para compilar e executar este projeto, você precisará dos seguintes componente
 -   **Make**: Para automatizar o processo de compilação.
 -   **Biblioteca Raylib**: Para a renderização gráfica.
 -   **Biblioteca Pthreads**: Para o suporte a multithreading (geralmente incluída em sistemas baseados em Linux).
+-   **Biblioteca MPI**: Para o suporte a computação paralela com MPI (e.g., OpenMPI).
 
 ### Instalação das Dependências (Exemplo para Debian/Ubuntu)
 
@@ -33,6 +34,11 @@ Para compilar e executar este projeto, você precisará dos seguintes componente
 2.  **Instale a biblioteca Raylib:**
     ```bash
     sudo apt install libraylib-dev
+    ```
+
+3.  **Instale uma implementação de MPI (OpenMPI):**
+    ```bash
+    sudo apt install libopenmpi-dev
     ```
 
 ## Como Compilar e Executar
@@ -68,6 +74,22 @@ O projeto utiliza um `Makefile` para simplificar o processo de compilação.
     make clean
     ```
 
+### Compilação e Execução com MPI
+
+Para compilar e executar a versão com MPI do projeto, siga estes passos:
+
+1.  **Ative o modo MPI:**
+    No arquivo `src/defs.h`, certifique-se de que a macro `RUN_MODE` está definida como `MPI`:
+    ```c
+    #define RUN_MODE MPI
+    ```
+
+2.  **Compile para MPI:**
+    Use o alvo `mpi` do Makefile. Isso usará o compilador `mpicc` e gerará o executável em `build/out-mpi`.
+    ```bash
+    make mpi
+    ```
+
 ## Controles da Simulação
 
 Durante a execução, você pode usar as seguintes teclas:
@@ -79,7 +101,7 @@ Durante a execução, você pode usar as seguintes teclas:
 
 ## Configuração (`src/defs.h`)
 
-É possível personalizar vários parâmetros da simulação editando o arquivo `/home/nicolas/uem/PC2025-TRAIN-SIMULATION/src/defs.h`.
+É possível personalizar vários parâmetros da simulação editando o arquivo `src/defs.h`.
 
 Aqui estão as principais macros que você pode alterar:
 
@@ -99,12 +121,14 @@ Aqui estão as principais macros que você pode alterar:
     -   Define o número total de entidades (agentes) na simulação.
     -   Exemplo: `define ENTITY_COUNT 500`.
 
--   **`MULTITHREADING`**:
-    -   `1`: Ativa o modo de multithreading. A lógica das entidades será dividida entre várias threads.
-    -   `0`: Desativa o multithreading. Todas as entidades serão processadas na thread principal.
+-   **`RUN_MODE`**:
+    -   Controla o modo de execução da simulação. Pode ser `SINGLE_THREAD`, `MULTI_THREAD`, ou `MPI`.
+    -   `SINGLE_THREAD`: Execução em uma única thread.
+    -   `MULTI_THREAD`: Ativa o modo de multithreading. A lógica das entidades será dividida entre várias threads.
+    -   `MPI`: Ativa o modo de computação paralela com MPI. Requer compilação e execução específicas (veja a seção de MPI).
 
 -   **`THREAD_COUNT`**:
-    -   Define o número de threads que serão criadas se `MULTITHREADING` estiver ativado. O número de entidades (`ENTITY_COUNT`) será distribuído entre essas threads.
+-   Define o número de threads que serão criadas se o modo `MULTI_THREAD` estiver ativo.
     -   Exemplo: `define THREAD_COUNT 4`.
 
 **Importante**: Após modificar o arquivo `defs.h`, você precisa **recompilar o projeto** com `make` para que as alterações tenham efeito.
